@@ -59,12 +59,39 @@ class ChatScreenState extends State<ChatScreen> {
                   ),
                 )
               ],
-            )
-        )
-    );
+            )));
   }
 
   void _textMessageSubmitted(String text) {
     _textEditingController.clear();
+  }
+}
+
+class ChatMessage extends StatelessWidget {
+  //TODO Replace name with Google username
+  String _name = "Rohan";
+  final String messageText;
+
+  ChatMessage({this.messageText});
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: new Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          new CircleAvatar(
+            child: new Text(_name[0]), //display first letter of name in avatar
+          ),
+          new Column(
+            children: <Widget>[
+              new Text(_name),
+              new Text(messageText),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
