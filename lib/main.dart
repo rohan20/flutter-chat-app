@@ -128,14 +128,16 @@ class ChatMessage extends StatelessWidget {
                 //display first letter of name in avatar
                 child: new Text(_name[0]),
               )),
-          new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Text(_name, style: Theme.of(context).textTheme.subhead),
-              new Container(
-                  margin: const EdgeInsets.only(top: 5.0),
-                  child: new Text(messageText)),
-            ],
+          new Expanded(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(_name, style: Theme.of(context).textTheme.subhead),
+                new Container(
+                    margin: const EdgeInsets.only(top: 5.0),
+                    child: new Text(messageText)),
+              ],
+            ),
           ),
         ],
       ),
