@@ -12,7 +12,14 @@ class FlutterChatApp extends StatelessWidget {
   }
 }
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
+  @override
+  ChatScreenState createState() {
+    return new ChatScreenState();
+  }
+}
+
+class ChatScreenState extends State<ChatScreen>{
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -20,5 +27,4 @@ class ChatScreen extends StatelessWidget {
         title: new Text("Flutter Chat App"),
       ),
     );
-  }
 }
