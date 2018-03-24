@@ -19,10 +19,11 @@ class ChatScreen extends StatefulWidget {
   }
 }
 
-class ChatScreenState extends State<ChatScreen> {
+class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<ChatMessage> _messagesList = <ChatMessage>[];
   final TextEditingController _textEditingController =
       new TextEditingController();
+  bool _isComposingMessage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,9 @@ class ChatScreenState extends State<ChatScreen> {
   Widget _buildTextComposer() {
     return new IconTheme(
         data: new IconThemeData(
-          color: Theme.of(context).accentColor,
+          color: _isComposingMessage
+              ? Theme.of(context).accentColor
+              : Theme.of(context).disabledColor,
         ),
         child: new Container(
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -60,6 +63,11 @@ class ChatScreenState extends State<ChatScreen> {
                 new Flexible(
                   child: new TextField(
                     controller: _textEditingController,
+                    onChanged: (String messageText) {
+                      setState(() {
+                        _isComposingMessage = messageText.length > 0;
+                      });
+                    },
                     onSubmitted: _textMessageSubmitted,
                     decoration: new InputDecoration.collapsed(
                         hintText: "Send a message"),
@@ -69,8 +77,9 @@ class ChatScreenState extends State<ChatScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: new IconButton(
                     icon: new Icon(Icons.send),
-                    onPressed: () =>
-                        _textMessageSubmitted(_textEditingController.text),
+                    onPressed: () => _isComposingMessage
+                        ? _textMessageSubmitted(_textEditingController.text)
+                        : null,
                   ),
                 )
               ],
@@ -79,12 +88,22 @@ class ChatScreenState extends State<ChatScreen> {
 
   void _textMessageSubmitted(String text) {
     _textEditingController.clear();
+
+    setState(() {
+      _isComposingMessage = false;
+    });
+
     ChatMessage chatMessage = new ChatMessage(
       messageText: text,
+      animationController: new AnimationController(
+          duration: new Duration(milliseconds: 1500), vsync: this),
     );
+
     setState(() {
       _messagesList.insert(0, chatMessage);
     });
+
+    chatMessage.animationController.forward();
   }
 }
 
@@ -92,8 +111,9 @@ class ChatMessage extends StatelessWidget {
   //TODO Replace name with Google username
   String _name = "Rohan";
   final String messageText;
+  final AnimationController animationController;
 
-  ChatMessage({this.messageText});
+  ChatMessage({this.messageText, this.animationController});
 
   @override
   Widget build(BuildContext context) {
