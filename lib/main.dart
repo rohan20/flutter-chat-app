@@ -96,7 +96,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     ChatMessage chatMessage = new ChatMessage(
       messageText: text,
       animationController: new AnimationController(
-          duration: new Duration(milliseconds: 1500), vsync: this),
+          duration: new Duration(milliseconds: 700), vsync: this),
     );
 
     setState(() {
@@ -117,29 +117,32 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new Container(
-              margin: const EdgeInsets.only(right: 16.0),
-              child: new CircleAvatar(
-                //display first letter of name in avatar
-                child: new Text(_name[0]),
-              )),
-          new Expanded(
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new Text(_name, style: Theme.of(context).textTheme.subhead),
-                new Container(
-                    margin: const EdgeInsets.only(top: 5.0),
-                    child: new Text(messageText)),
-              ],
+    return new SizeTransition(
+      sizeFactor: new CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+      child: new Container(
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        child: new Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                child: new CircleAvatar(
+                  //display first letter of name in avatar
+                  child: new Text(_name[0]),
+                )),
+            new Expanded(
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Text(_name, style: Theme.of(context).textTheme.subhead),
+                  new Container(
+                      margin: const EdgeInsets.only(top: 5.0),
+                      child: new Text(messageText)),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
