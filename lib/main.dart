@@ -20,11 +20,25 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> {
+
+  final TextEditingController _textEditingController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Flutter Chat App"),
+      ),
+      body: _buildTextComposer(),
+    );
+  }
+
+  Widget _buildTextComposer(){
+    return new Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: new TextField(
+        controller: _textEditingController,
+        decoration: new InputDecoration.collapsed(hintText: "Send a message"),
       ),
     );
   }
