@@ -21,7 +21,7 @@ class ChatScreen extends StatefulWidget {
 
 class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textEditingController =
-  new TextEditingController();
+      new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +34,34 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildTextComposer() {
-    return new Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: new Row(
-          children: <Widget>[
-            new Flexible(
-              child: new TextField(
-                controller: _textEditingController,
-                onSubmitted: _textMessageSubmitted,
-                decoration:
-                new InputDecoration.collapsed(hintText: "Send a message"),
-              ),
-            ),
-            new Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: () => _textMessageSubmitted(_textEditingController.text),),
+    return new IconTheme(
+        data: new IconThemeData(
+          color: Theme.of(context).accentColor,
+        ),
+        child: new Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: new Row(
+              children: <Widget>[
+                new Flexible(
+                  child: new TextField(
+                    controller: _textEditingController,
+                    onSubmitted: _textMessageSubmitted,
+                    decoration: new InputDecoration.collapsed(
+                        hintText: "Send a message"),
+                  ),
+                ),
+                new Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: new IconButton(
+                    icon: new Icon(Icons.send),
+                    onPressed: () =>
+                        _textMessageSubmitted(_textEditingController.text),
+                  ),
+                )
+              ],
             )
-          ],
-        ));
+        )
+    );
   }
 
   void _textMessageSubmitted(String text) {
