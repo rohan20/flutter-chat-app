@@ -32,9 +32,14 @@ class ChatScreenState extends State<ChatScreen> {
         ),
         body: new Column(
           children: <Widget>[
-            new Divider(
-                height: 1.0
-            ),
+            new Flexible(
+                child: new ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              reverse: true,
+              itemBuilder: (_, int index) => _messagesList[index],
+              itemCount: _messagesList.length,
+            )),
+            new Divider(height: 1.0),
             new Container(
               decoration: new BoxDecoration(color: Theme.of(context).cardColor),
               child: _buildTextComposer(),
