@@ -4,6 +4,12 @@ description: One-to-one chat and Firebase auth
 dependencies:
   flutter:
     sdk: flutter
+  image_picker: 0.1.1
+  google_sign_in: 0.3.1
+  firebase_analytics: 0.0.4
+  firebase_auth: 0.2.0
+  firebase_database: 0.0.12
+  firebase_storage: 0.0.5
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
