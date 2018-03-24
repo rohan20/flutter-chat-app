@@ -12,7 +12,7 @@ import 'package:flutter_chat_app/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(new ChatApp());
+    await tester.pumpWidget(new FlutterChatApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
