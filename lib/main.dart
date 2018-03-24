@@ -38,8 +38,13 @@ class ChatScreenState extends State<ChatScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 8.0),
       child: new TextField(
         controller: _textEditingController,
+        onSubmitted: _textMessageSubmitted,
         decoration: new InputDecoration.collapsed(hintText: "Send a message"),
       ),
     );
+  }
+
+  void _textMessageSubmitted(String text) {
+    _textEditingController.clear();
   }
 }
