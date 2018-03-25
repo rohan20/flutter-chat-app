@@ -146,7 +146,7 @@ class ChatMessage extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 16.0),
                 child: new CircleAvatar(
                   //display first letter of name in avatar
-                  child: new Text(_name[0]),
+                  backgroundImage: new NetworkImage(googleSignIn.currentUser.photoUrl),
                 )),
             new Expanded(
               child: new Column(
