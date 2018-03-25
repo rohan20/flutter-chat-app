@@ -4,7 +4,7 @@ A one-to-one chat app build on Flutter with firebase authentication and image sh
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
+For help getting started with Flutter, view the online
 [documentation](https://flutter.io/).
 
 # Demo
