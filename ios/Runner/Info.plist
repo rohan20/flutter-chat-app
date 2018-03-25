@@ -27,6 +27,12 @@
     	<key>UIMainStoryboardFile</key>
     	<string>Main</string>
     	<key>UIRequiredDeviceCapabilities</key>
+
+    	<key>NSCameraUsageDescription</key>
+                 <string>Share images with other chat users</string>
+                 <key>NSPhotoLibraryUsageDescription</key>
+                 <string>Share images with other chat users</string>
+
     	<array>
     		<string>arm64</string>
     	</array>
