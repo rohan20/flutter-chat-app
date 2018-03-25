@@ -11,6 +11,7 @@ final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
 final auth = FirebaseAuth.instance;
 var currentUserEmail;
+var _scaffoldContext;
 
 void main() => runApp(new FlutterChatApp());
 
@@ -39,9 +40,15 @@ class ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Flutter Chat App"),
+          actions: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.exit_to_app),
+                onPressed: _signOut)
+          ],
         ),
         body: new Column(
           children: <Widget>[
@@ -65,7 +72,11 @@ class ChatScreenState extends State<ChatScreen> {
             new Container(
               decoration: new BoxDecoration(color: Theme.of(context).cardColor),
               child: _buildTextComposer(),
-            )
+            ),
+            new Builder(builder: (BuildContext context){
+              _scaffoldContext = context;
+              return new Container(width: 0.0, height: 0.0);
+            })
           ],
         ));
   }
@@ -146,6 +157,12 @@ class ChatScreenState extends State<ChatScreen> {
       await auth.signInWithGoogle(
           idToken: credentials.idToken, accessToken: credentials.accessToken);
     }
+  }
+
+  void _signOut() async {
+    await auth.signOut();
+    googleSignIn.signOut();
+    Scaffold.of(_scaffoldContext).showSnackBar(new SnackBar(content: new Text('User logged out')));
   }
 }
 
