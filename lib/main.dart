@@ -46,12 +46,19 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         body: new Column(
           children: <Widget>[
             new Flexible(
-                child: new ListView.builder(
-              padding: const EdgeInsets.all(8.0),
-              reverse: true,
-              itemBuilder: (_, int index) => _messagesList[index],
-              itemCount: _messagesList.length,
-            )),
+                child: new FirebaseAnimatedList(
+                    query: reference,
+                    padding: const EdgeInsets.all(8.0),
+                    reverse: true,
+                    sort: (a,b) => b.key.compareTo(a.key), //comparing timestamp of messages to check which one would appear first
+                    itemBuilder: (_, DataSnapshot messageSnapshot, Animation<double> animation){
+                      return new ChatMessage (
+                        messageSnapshot: messageSnapshot,
+                        animation: animation,
+                      );
+                    },
+                ),
+            ),
             new Divider(height: 1.0),
             new Container(
               decoration: new BoxDecoration(color: Theme.of(context).cardColor),
