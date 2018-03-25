@@ -152,7 +152,7 @@ class ChatMessage extends StatelessWidget {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Text(_name, style: Theme.of(context).textTheme.subhead),
+                  new Text(googleSignIn.currentUser.displayName, style: Theme.of(context).textTheme.subhead),
                   new Container(
                       margin: const EdgeInsets.only(top: 5.0),
                       child: new Text(messageText)),
