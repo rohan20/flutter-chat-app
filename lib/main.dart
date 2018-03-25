@@ -10,6 +10,7 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
 final auth = FirebaseAuth.instance;
+var currentUserEmail;
 
 void main() => runApp(new FlutterChatApp());
 
@@ -45,18 +46,20 @@ class ChatScreenState extends State<ChatScreen> {
         body: new Column(
           children: <Widget>[
             new Flexible(
-                child: new FirebaseAnimatedList(
-                    query: reference,
-                    padding: const EdgeInsets.all(8.0),
-                    reverse: true,
-                    sort: (a,b) => b.key.compareTo(a.key), //comparing timestamp of messages to check which one would appear first
-                    itemBuilder: (_, DataSnapshot messageSnapshot, Animation<double> animation){
-                      return new ChatMessage (
-                        messageSnapshot: messageSnapshot,
-                        animation: animation,
-                      );
-                    },
-                ),
+              child: new FirebaseAnimatedList(
+                query: reference,
+                padding: const EdgeInsets.all(8.0),
+                reverse: true,
+                sort: (a, b) => b.key.compareTo(a.key),
+                //comparing timestamp of messages to check which one would appear first
+                itemBuilder: (_, DataSnapshot messageSnapshot,
+                    Animation<double> animation) {
+                  return new ChatMessage(
+                    messageSnapshot: messageSnapshot,
+                    animation: animation,
+                  );
+                },
+              ),
             ),
             new Divider(height: 1.0),
             new Container(
@@ -118,6 +121,7 @@ class ChatScreenState extends State<ChatScreen> {
   void _sendMessage({String messageText}) {
     reference.push().set({
       'text': messageText,
+      'email': googleSignIn.currentUser.email,
       'senderName': googleSignIn.currentUser.displayName,
       'senderPhotoUrl': googleSignIn.currentUser.photoUrl,
     });
@@ -134,9 +138,13 @@ class ChatScreenState extends State<ChatScreen> {
       analytics.logLogin();
     }
 
-    if(await auth.currentUser() == null){
-      GoogleSignInAuthentication credentials = await googleSignIn.currentUser.authentication;
-      await auth.signInWithGoogle(idToken: credentials.idToken, accessToken: credentials.accessToken);
+    currentUserEmail = googleSignIn.currentUser.email;
+
+    if (await auth.currentUser() == null) {
+      GoogleSignInAuthentication credentials =
+          await googleSignIn.currentUser.authentication;
+      await auth.signInWithGoogle(
+          idToken: credentials.idToken, accessToken: credentials.accessToken);
     }
   }
 }
@@ -150,33 +158,80 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
-      sizeFactor: new CurvedAnimation(
-          parent: animation, curve: Curves.decelerate),
+      sizeFactor:
+          new CurvedAnimation(parent: animation, curve: Curves.decelerate),
       child: new Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: new Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Container(
-                margin: const EdgeInsets.only(right: 16.0),
-                child: new CircleAvatar(
-                  //display first letter of name in avatar
-                  backgroundImage: new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
-                )),
-            new Expanded(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new Text(messageSnapshot.value['senderName'], style: Theme.of(context).textTheme.subhead),
-                  new Container(
-                      margin: const EdgeInsets.only(top: 5.0),
-                      child: new Text(messageSnapshot.value['text'])),
-                ],
-              ),
-            ),
-          ],
+          children: currentUserEmail == messageSnapshot.value['email']
+              ? getSentMessageLayout()
+              : getReceivedMessageLayout(),
         ),
       ),
     );
+  }
+
+  List<Widget> getSentMessageLayout() {
+    return <Widget>[
+
+      new Expanded(
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            new Text(messageSnapshot.value['senderName'],
+                style: new TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+            new Container(
+                margin: const EdgeInsets.only(top: 5.0),
+                child: new Text(messageSnapshot.value['text'])),
+          ],
+        ),
+      ),
+
+      new Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          new Container(
+              margin: const EdgeInsets.only(left: 8.0),
+              child: new CircleAvatar(
+                backgroundImage:
+                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+              )),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> getReceivedMessageLayout() {
+    return <Widget>[
+      new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new Container(
+              margin: const EdgeInsets.only(right: 8.0),
+              child: new CircleAvatar(
+                backgroundImage:
+                    new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+              )),
+        ],
+      ),
+      new Expanded(
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Text(messageSnapshot.value['senderName'],
+                style: new TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold)),
+            new Container(
+                margin: const EdgeInsets.only(top: 5.0),
+                child: new Text(messageSnapshot.value['text'])),
+          ],
+        ),
+      ),
+    ];
   }
 }
