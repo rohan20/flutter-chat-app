@@ -30,8 +30,7 @@ class ChatScreen extends StatefulWidget {
   }
 }
 
-class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  final List<ChatMessage> _messagesList = <ChatMessage>[];
+class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textEditingController =
       new TextEditingController();
   bool _isComposingMessage = false;
