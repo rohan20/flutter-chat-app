@@ -91,15 +91,20 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             )));
   }
 
-  void _textMessageSubmitted(String text) {
+  Future _textMessageSubmitted(String text) async {
     _textEditingController.clear();
 
     setState(() {
       _isComposingMessage = false;
     });
 
+    await _ensureLoggedIn();
+    _sendMessage(messageText: text);
+  }
+
+  void _sendMessage({String messageText}) {
     ChatMessage chatMessage = new ChatMessage(
-      messageText: text,
+      messageText: messageText,
       animationController: new AnimationController(
           duration: new Duration(milliseconds: 700), vsync: this),
     );
@@ -113,10 +118,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Future<Null> _ensureLoggedIn() async {
     GoogleSignInAccount signedInUser = googleSignIn.currentUser;
-    if(signedInUser == null)
+    if (signedInUser == null)
       signedInUser = await googleSignIn.signInSilently();
-    if(signedInUser == null)
-      await googleSignIn.signIn();
+    if (signedInUser == null) await googleSignIn.signIn();
   }
 }
 
@@ -131,7 +135,8 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
-      sizeFactor: new CurvedAnimation(parent: animationController, curve: Curves.decelerate),
+      sizeFactor: new CurvedAnimation(
+          parent: animationController, curve: Curves.decelerate),
       child: new Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: new Row(
