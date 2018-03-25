@@ -41,6 +41,7 @@ class ChatScreenState extends State<ChatScreen> {
       new TextEditingController();
   bool _isComposingMessage = false;
   final reference = FirebaseDatabase.instance.reference().child('messages');
+  var downloadUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -86,16 +87,29 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildTextComposer() {
+
     return new IconTheme(
         data: new IconThemeData(
-          color: _isComposingMessage
-              ? Theme.of(context).accentColor
-              : Theme.of(context).disabledColor,
+          color: _isComposingMessage ? Theme.of(context).accentColor : Theme.of(context).disabledColor,
         ),
         child: new Container(
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
             child: new Row(
               children: <Widget>[
+                new Container(
+                  margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                  child: new IconButton(
+                      icon: new Icon(Icons.photo_camera),
+                      onPressed: () async {
+                        await _ensureLoggedIn();
+                        File imageFile = await ImagePicker.pickImage();
+                        int timestamp = new DateTime.now().millisecondsSinceEpoch;
+                        StorageReference storageReference = FirebaseStorage.instance.ref().child("img_" + timestamp.toString() + ".jpg");
+                        StorageUploadTask uploadTask = storageReference.put(imageFile);
+                        downloadUrl = (await uploadTask.future).downloadUrl;
+                      }
+                  ),
+                ),
                 new Flexible(
                   child: new TextField(
                     controller: _textEditingController,
@@ -130,13 +144,14 @@ class ChatScreenState extends State<ChatScreen> {
     });
 
     await _ensureLoggedIn();
-    _sendMessage(messageText: text);
+    _sendMessage(messageText: text, imageUrl: downloadUrl.toString());
   }
 
-  void _sendMessage({String messageText}) {
+  void _sendMessage({String messageText, String imageUrl}) {
     reference.push().set({
       'text': messageText,
       'email': googleSignIn.currentUser.email,
+      'imageUrl': imageUrl,
       'senderName': googleSignIn.currentUser.displayName,
       'senderPhotoUrl': googleSignIn.currentUser.photoUrl,
     });
