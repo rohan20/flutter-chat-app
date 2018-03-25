@@ -41,7 +41,6 @@ class ChatScreenState extends State<ChatScreen> {
       new TextEditingController();
   bool _isComposingMessage = false;
   final reference = FirebaseDatabase.instance.reference().child('messages');
-  var downloadUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +98,16 @@ class ChatScreenState extends State<ChatScreen> {
                 new Container(
                   margin: new EdgeInsets.symmetric(horizontal: 4.0),
                   child: new IconButton(
-                      icon: new Icon(Icons.photo_camera),
+                      icon: new Icon(Icons.photo_camera,
+                      color: Theme.of(context).accentColor,),
                       onPressed: () async {
                         await _ensureLoggedIn();
                         File imageFile = await ImagePicker.pickImage();
                         int timestamp = new DateTime.now().millisecondsSinceEpoch;
                         StorageReference storageReference = FirebaseStorage.instance.ref().child("img_" + timestamp.toString() + ".jpg");
                         StorageUploadTask uploadTask = storageReference.put(imageFile);
-                        downloadUrl = (await uploadTask.future).downloadUrl;
+                        Uri downloadUrl = (await uploadTask.future).downloadUrl;
+                        _sendMessage(messageText: null, imageUrl: downloadUrl.toString());
                       }
                   ),
                 ),
@@ -144,7 +145,7 @@ class ChatScreenState extends State<ChatScreen> {
     });
 
     await _ensureLoggedIn();
-    _sendMessage(messageText: text, imageUrl: downloadUrl.toString());
+    _sendMessage(messageText: text, imageUrl: null);
   }
 
   void _sendMessage({String messageText, String imageUrl}) {
@@ -221,7 +222,8 @@ class ChatMessage extends StatelessWidget {
                     fontWeight: FontWeight.bold)),
             new Container(
                 margin: const EdgeInsets.only(top: 5.0),
-                child: new Text(messageSnapshot.value['text'])),
+                child: messageSnapshot.value['imageUrl'] != null ? new Image.network(messageSnapshot.value['imageUrl'], width: 250.0,) : new Text(messageSnapshot.value['text']),
+            ),
           ],
         ),
       ),
@@ -231,6 +233,7 @@ class ChatMessage extends StatelessWidget {
         children: <Widget>[
           new Container(
               margin: const EdgeInsets.only(left: 8.0),
+              alignment: Alignment.topCenter,
               child: new CircleAvatar(
                 backgroundImage:
                 new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
@@ -264,7 +267,8 @@ class ChatMessage extends StatelessWidget {
                     fontWeight: FontWeight.bold)),
             new Container(
                 margin: const EdgeInsets.only(top: 5.0),
-                child: new Text(messageSnapshot.value['text'])),
+              child: messageSnapshot.value['imageUrl'] != null ? new Image.network(messageSnapshot.value['imageUrl'], width: 250.0,) : new Text(messageSnapshot.value['text']),
+            ),
           ],
         ),
       ),
