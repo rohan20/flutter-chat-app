@@ -148,18 +148,16 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 }
 
 class ChatMessage extends StatelessWidget {
-  //TODO Replace name with Google username
-  String _name = "Rohan";
-  final String messageText;
-  final AnimationController animationController;
+  final DataSnapshot messageSnapshot;
+  final Animation animation;
 
-  ChatMessage({this.messageText, this.animationController});
+  ChatMessage({this.messageSnapshot, this.animation});
 
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
       sizeFactor: new CurvedAnimation(
-          parent: animationController, curve: Curves.decelerate),
+          parent: animation, curve: Curves.decelerate),
       child: new Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: new Row(
@@ -169,16 +167,16 @@ class ChatMessage extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 16.0),
                 child: new CircleAvatar(
                   //display first letter of name in avatar
-                  backgroundImage: new NetworkImage(googleSignIn.currentUser.photoUrl),
+                  backgroundImage: new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
                 )),
             new Expanded(
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Text(googleSignIn.currentUser.displayName, style: Theme.of(context).textTheme.subhead),
+                  new Text(messageSnapshot.value['senderName'], style: Theme.of(context).textTheme.subhead),
                   new Container(
                       margin: const EdgeInsets.only(top: 5.0),
-                      child: new Text(messageText)),
+                      child: new Text(messageSnapshot.value['text'])),
                 ],
               ),
             ),
