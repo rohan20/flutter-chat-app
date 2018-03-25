@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -107,6 +109,14 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
 
     chatMessage.animationController.forward();
+  }
+
+  Future<Null> _ensureLoggedIn() async {
+    GoogleSignInAccount signedInUser = googleSignIn.currentUser;
+    if(signedInUser == null)
+      signedInUser = await googleSignIn.signInSilently();
+    if(signedInUser == null)
+      await googleSignIn.signIn();
   }
 }
 
