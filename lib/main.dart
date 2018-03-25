@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
@@ -33,6 +35,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController _textEditingController =
       new TextEditingController();
   bool _isComposingMessage = false;
+  final reference = FirebaseDatabase.instance.reference().child('messages');
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +121,13 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
 
     chatMessage.animationController.forward();
+
+    reference.push().set({
+      'text': messageText,
+      'senderName': googleSignIn.currentUser.displayName,
+      'senderPhotoUrl': googleSignIn.currentUser.photoUrl,
+    });
+
     analytics.logEvent(name: 'send_message');
   }
 
