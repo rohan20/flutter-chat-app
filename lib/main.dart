@@ -110,18 +110,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _sendMessage({String messageText}) {
-    ChatMessage chatMessage = new ChatMessage(
-      messageText: messageText,
-      animationController: new AnimationController(
-          duration: new Duration(milliseconds: 700), vsync: this),
-    );
-
-    setState(() {
-      _messagesList.insert(0, chatMessage);
-    });
-
-    chatMessage.animationController.forward();
-
     reference.push().set({
       'text': messageText,
       'senderName': googleSignIn.currentUser.displayName,
