@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 final googleSignIn = new GoogleSignIn();
+final analytics = new FirebaseAnalytics();
 
 void main() => runApp(new FlutterChatApp());
 
@@ -91,7 +93,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             )));
   }
 
-  Future _textMessageSubmitted(String text) async {
+  Future<Null> _textMessageSubmitted(String text) async {
     _textEditingController.clear();
 
     setState(() {
@@ -114,13 +116,17 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
 
     chatMessage.animationController.forward();
+    analytics.logEvent(name: 'send_message');
   }
 
   Future<Null> _ensureLoggedIn() async {
     GoogleSignInAccount signedInUser = googleSignIn.currentUser;
     if (signedInUser == null)
       signedInUser = await googleSignIn.signInSilently();
-    if (signedInUser == null) await googleSignIn.signIn();
+    if (signedInUser == null) {
+      await googleSignIn.signIn();
+      analytics.logLogin();
+    }
   }
 }
 
