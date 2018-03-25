@@ -233,7 +233,6 @@ class ChatMessage extends StatelessWidget {
         children: <Widget>[
           new Container(
               margin: const EdgeInsets.only(left: 8.0),
-              alignment: Alignment.topCenter,
               child: new CircleAvatar(
                 backgroundImage:
                 new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
