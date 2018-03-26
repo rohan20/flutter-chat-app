@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:math';
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
@@ -25,10 +26,22 @@ class FlutterChatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: "Flutter Chat App",
+      theme: defaultTargetPlatform == TargetPlatform.iOS ? kIOSTheme : kDefaultTheme,
       home: new ChatScreen(),
     );
   }
 }
+
+final ThemeData kIOSTheme = new ThemeData(
+  primarySwatch: Colors.blue,
+  primaryColor: Colors.grey[100],
+  primaryColorBrightness: Brightness.light,
+);
+
+final ThemeData kDefaultTheme = new ThemeData(
+  primarySwatch: Colors.blue,
+  accentColor: Colors.blue[400],
+);
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -45,14 +58,12 @@ class ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Flutter Chat App"),
           actions: <Widget>[
             new IconButton(
-                icon: new Icon(Icons.exit_to_app),
-                onPressed: _signOut)
+                icon: new Icon(Icons.exit_to_app), onPressed: _signOut)
           ],
         ),
         body: new Column(
@@ -78,7 +89,7 @@ class ChatScreenState extends State<ChatScreen> {
               decoration: new BoxDecoration(color: Theme.of(context).cardColor),
               child: _buildTextComposer(),
             ),
-            new Builder(builder: (BuildContext context){
+            new Builder(builder: (BuildContext context) {
               _scaffoldContext = context;
               return new Container(width: 0.0, height: 0.0);
             })
@@ -87,10 +98,11 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildTextComposer() {
-
     return new IconTheme(
         data: new IconThemeData(
-          color: _isComposingMessage ? Theme.of(context).accentColor : Theme.of(context).disabledColor,
+          color: _isComposingMessage
+              ? Theme.of(context).accentColor
+              : Theme.of(context).disabledColor,
         ),
         child: new Container(
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -99,18 +111,26 @@ class ChatScreenState extends State<ChatScreen> {
                 new Container(
                   margin: new EdgeInsets.symmetric(horizontal: 4.0),
                   child: new IconButton(
-                      icon: new Icon(Icons.photo_camera,
-                      color: Theme.of(context).accentColor,),
+                      icon: new Icon(
+                        Icons.photo_camera,
+                        color: Theme.of(context).accentColor,
+                      ),
                       onPressed: () async {
                         await _ensureLoggedIn();
                         File imageFile = await ImagePicker.pickImage();
-                        int timestamp = new DateTime.now().millisecondsSinceEpoch;
-                        StorageReference storageReference = FirebaseStorage.instance.ref().child("img_" + timestamp.toString() + ".jpg");
-                        StorageUploadTask uploadTask = storageReference.put(imageFile);
+                        int timestamp =
+                            new DateTime.now().millisecondsSinceEpoch;
+                        StorageReference storageReference = FirebaseStorage
+                            .instance
+                            .ref()
+                            .child("img_" + timestamp.toString() + ".jpg");
+                        StorageUploadTask uploadTask =
+                            storageReference.put(imageFile);
                         Uri downloadUrl = (await uploadTask.future).downloadUrl;
-                        _sendMessage(messageText: null, imageUrl: downloadUrl.toString());
-                      }
-                  ),
+                        _sendMessage(
+                            messageText: null,
+                            imageUrl: downloadUrl.toString());
+                      }),
                 ),
                 new Flexible(
                   child: new TextField(
@@ -183,7 +203,9 @@ class ChatScreenState extends State<ChatScreen> {
   Future _signOut() async {
     await auth.signOut();
     googleSignIn.signOut();
-    Scaffold.of(_scaffoldContext).showSnackBar(new SnackBar(content: new Text('User logged out')));
+    Scaffold
+        .of(_scaffoldContext)
+        .showSnackBar(new SnackBar(content: new Text('User logged out')));
   }
 }
 
@@ -211,7 +233,6 @@ class ChatMessage extends StatelessWidget {
 
   List<Widget> getSentMessageLayout() {
     return <Widget>[
-
       new Expanded(
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -222,13 +243,17 @@ class ChatMessage extends StatelessWidget {
                     color: Colors.black,
                     fontWeight: FontWeight.bold)),
             new Container(
-                margin: const EdgeInsets.only(top: 5.0),
-                child: messageSnapshot.value['imageUrl'] != null ? new Image.network(messageSnapshot.value['imageUrl'], width: 250.0,) : new Text(messageSnapshot.value['text']),
+              margin: const EdgeInsets.only(top: 5.0),
+              child: messageSnapshot.value['imageUrl'] != null
+                  ? new Image.network(
+                      messageSnapshot.value['imageUrl'],
+                      width: 250.0,
+                    )
+                  : new Text(messageSnapshot.value['text']),
             ),
           ],
         ),
       ),
-
       new Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
@@ -236,7 +261,7 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(left: 8.0),
               child: new CircleAvatar(
                 backgroundImage:
-                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+                    new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
               )),
         ],
       ),
@@ -266,8 +291,13 @@ class ChatMessage extends StatelessWidget {
                     color: Colors.black,
                     fontWeight: FontWeight.bold)),
             new Container(
-                margin: const EdgeInsets.only(top: 5.0),
-              child: messageSnapshot.value['imageUrl'] != null ? new Image.network(messageSnapshot.value['imageUrl'], width: 250.0,) : new Text(messageSnapshot.value['text']),
+              margin: const EdgeInsets.only(top: 5.0),
+              child: messageSnapshot.value['imageUrl'] != null
+                  ? new Image.network(
+                      messageSnapshot.value['imageUrl'],
+                      width: 250.0,
+                    )
+                  : new Text(messageSnapshot.value['text']),
             ),
           ],
         ),
