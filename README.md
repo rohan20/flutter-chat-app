@@ -1,6 +1,6 @@
 # flutter_chat_app
 
-A one-to-one chat app build on Flutter with firebase authentication and image sharing capability.
+A one-to-one chat app built on Flutter with firebase authentication and image sharing capability.
 
 ## Getting Started
 
