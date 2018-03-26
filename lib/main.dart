@@ -10,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:math';
 import 'dart:io';
+import 'dart:async';
 
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
@@ -179,7 +180,7 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _signOut() async {
+  Future _signOut() async {
     await auth.signOut();
     googleSignIn.signOut();
     Scaffold.of(_scaffoldContext).showSnackBar(new SnackBar(content: new Text('User logged out')));
