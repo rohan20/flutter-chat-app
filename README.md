@@ -8,7 +8,9 @@ For help getting started with Flutter, view the online
 [documentation](https://flutter.io/).
 
 # Demo
-Coming soon
+![Demo](https://github.com/rohan20/flutter-chat-app/blob/master/screenshots/flutter_chat_app_gif.gif)
+
+Watch the full video <a href="https://www.youtube.com/watch?v=bpdKo3dj4-4">here</a>
 
 ## Getting Started
 **Note:** Make sure your Flutter environment is setup.
