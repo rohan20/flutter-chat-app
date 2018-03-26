@@ -12,6 +12,7 @@ import 'dart:math';
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
@@ -26,7 +27,9 @@ class FlutterChatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: "Flutter Chat App",
-      theme: defaultTargetPlatform == TargetPlatform.iOS ? kIOSTheme : kDefaultTheme,
+      theme: defaultTargetPlatform == TargetPlatform.iOS
+          ? kIOSTheme
+          : kDefaultTheme,
       home: new ChatScreen(),
     );
   }
@@ -52,7 +55,7 @@ class ChatScreen extends StatefulWidget {
 
 class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textEditingController =
-      new TextEditingController();
+  new TextEditingController();
   bool _isComposingMessage = false;
   final reference = FirebaseDatabase.instance.reference().child('messages');
 
@@ -61,7 +64,10 @@ class ChatScreenState extends State<ChatScreen> {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Flutter Chat App"),
-          elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
+          elevation:
+          Theme
+              .of(context)
+              .platform == TargetPlatform.iOS ? 0.0 : 4.0,
           actions: <Widget>[
             new IconButton(
                 icon: new Icon(Icons.exit_to_app), onPressed: _signOut)
@@ -88,7 +94,10 @@ class ChatScreenState extends State<ChatScreen> {
               ),
               new Divider(height: 1.0),
               new Container(
-                decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+                decoration:
+                new BoxDecoration(color: Theme
+                    .of(context)
+                    .cardColor),
                 child: _buildTextComposer(),
               ),
               new Builder(builder: (BuildContext context) {
@@ -97,75 +106,99 @@ class ChatScreenState extends State<ChatScreen> {
               })
             ],
           ),
-          decoration: Theme.of(context).platform == TargetPlatform.iOS ? new BoxDecoration(
-            border: new Border(
-              top: new BorderSide(
-                color: Colors.grey[200],
-              )
-            )
-          ) : null,
+          decoration: Theme
+              .of(context)
+              .platform == TargetPlatform.iOS
+              ? new BoxDecoration(
+              border: new Border(
+                  top: new BorderSide(
+                    color: Colors.grey[200],
+                  )))
+              : null,
         ));
+  }
+
+  CupertinoButton getIOSSendButton() {
+    return new CupertinoButton(
+      child: new Text("Send"),
+      onPressed: _isComposingMessage ? () =>
+          _textMessageSubmitted(_textEditingController.text) : null,
+    );
+  }
+
+  IconButton getDefaultSendButton() {
+    return new IconButton(
+      icon: new Icon(Icons.send),
+      onPressed: _isComposingMessage ? () =>
+          _textMessageSubmitted(_textEditingController.text) : null,
+    );
   }
 
   Widget _buildTextComposer() {
     return new IconTheme(
         data: new IconThemeData(
           color: _isComposingMessage
-              ? Theme.of(context).accentColor
-              : Theme.of(context).disabledColor,
+              ? Theme
+              .of(context)
+              .accentColor
+              : Theme
+              .of(context)
+              .disabledColor,
         ),
         child: new Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: new Row(
-              children: <Widget>[
-                new Container(
-                  margin: new EdgeInsets.symmetric(horizontal: 4.0),
-                  child: new IconButton(
-                      icon: new Icon(
-                        Icons.photo_camera,
-                        color: Theme.of(context).accentColor,
-                      ),
-                      onPressed: () async {
-                        await _ensureLoggedIn();
-                        File imageFile = await ImagePicker.pickImage();
-                        int timestamp =
-                            new DateTime.now().millisecondsSinceEpoch;
-                        StorageReference storageReference = FirebaseStorage
-                            .instance
-                            .ref()
-                            .child("img_" + timestamp.toString() + ".jpg");
-                        StorageUploadTask uploadTask =
-                            storageReference.put(imageFile);
-                        Uri downloadUrl = (await uploadTask.future).downloadUrl;
-                        _sendMessage(
-                            messageText: null,
-                            imageUrl: downloadUrl.toString());
-                      }),
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: new Row(
+            children: <Widget>[
+              new Container(
+                margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                child: new IconButton(
+                    icon: new Icon(
+                      Icons.photo_camera,
+                      color: Theme
+                          .of(context)
+                          .accentColor,
+                    ),
+                    onPressed: () async {
+                      await _ensureLoggedIn();
+                      File imageFile = await ImagePicker.pickImage();
+                      int timestamp =
+                          new DateTime.now().millisecondsSinceEpoch;
+                      StorageReference storageReference = FirebaseStorage
+                          .instance
+                          .ref()
+                          .child("img_" + timestamp.toString() + ".jpg");
+                      StorageUploadTask uploadTask =
+                      storageReference.put(imageFile);
+                      Uri downloadUrl = (await uploadTask.future).downloadUrl;
+                      _sendMessage(
+                          messageText: null,
+                          imageUrl: downloadUrl.toString());
+                    }),
+              ),
+              new Flexible(
+                child: new TextField(
+                  controller: _textEditingController,
+                  onChanged: (String messageText) {
+                    setState(() {
+                      _isComposingMessage = messageText.length > 0;
+                    });
+                  },
+                  onSubmitted: _textMessageSubmitted,
+                  decoration: new InputDecoration.collapsed(
+                      hintText: "Send a message"),
                 ),
-                new Flexible(
-                  child: new TextField(
-                    controller: _textEditingController,
-                    onChanged: (String messageText) {
-                      setState(() {
-                        _isComposingMessage = messageText.length > 0;
-                      });
-                    },
-                    onSubmitted: _textMessageSubmitted,
-                    decoration: new InputDecoration.collapsed(
-                        hintText: "Send a message"),
-                  ),
-                ),
-                new Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: new IconButton(
-                    icon: new Icon(Icons.send),
-                    onPressed: () => _isComposingMessage
-                        ? _textMessageSubmitted(_textEditingController.text)
-                        : null,
-                  ),
-                )
-              ],
-            )));
+              ),
+              new Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Theme
+                    .of(context)
+                    .platform == TargetPlatform.iOS
+                    ? getIOSSendButton()
+                    : getDefaultSendButton(),
+              ),
+            ],
+          ),
+        ));
   }
 
   Future<Null> _textMessageSubmitted(String text) async {
@@ -204,7 +237,7 @@ class ChatScreenState extends State<ChatScreen> {
 
     if (await auth.currentUser() == null) {
       GoogleSignInAuthentication credentials =
-          await googleSignIn.currentUser.authentication;
+      await googleSignIn.currentUser.authentication;
       await auth.signInWithGoogle(
           idToken: credentials.idToken, accessToken: credentials.accessToken);
     }
@@ -229,7 +262,7 @@ class ChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new SizeTransition(
       sizeFactor:
-          new CurvedAnimation(parent: animation, curve: Curves.decelerate),
+      new CurvedAnimation(parent: animation, curve: Curves.decelerate),
       child: new Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: new Row(
@@ -256,9 +289,9 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 5.0),
               child: messageSnapshot.value['imageUrl'] != null
                   ? new Image.network(
-                      messageSnapshot.value['imageUrl'],
-                      width: 250.0,
-                    )
+                messageSnapshot.value['imageUrl'],
+                width: 250.0,
+              )
                   : new Text(messageSnapshot.value['text']),
             ),
           ],
@@ -271,7 +304,7 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(left: 8.0),
               child: new CircleAvatar(
                 backgroundImage:
-                    new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
               )),
         ],
       ),
@@ -287,7 +320,7 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(right: 8.0),
               child: new CircleAvatar(
                 backgroundImage:
-                    new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
               )),
         ],
       ),
@@ -304,9 +337,9 @@ class ChatMessage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 5.0),
               child: messageSnapshot.value['imageUrl'] != null
                   ? new Image.network(
-                      messageSnapshot.value['imageUrl'],
-                      width: 250.0,
-                    )
+                messageSnapshot.value['imageUrl'],
+                width: 250.0,
+              )
                   : new Text(messageSnapshot.value['text']),
             ),
           ],
