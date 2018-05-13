@@ -1,11 +1,11 @@
-# flutter_chat_app
+# Flutter Chat App
 
 A one-to-one chat app built on Flutter with firebase authentication and image sharing capability.
 
-## Getting Started
-
 For help getting started with Flutter, view the online
 [documentation](https://flutter.io/).
+
+You can check out the corresponding Google code lab [here](https://codelabs.developers.google.com/codelabs/flutter/index.html?index=..%2F..%2Findex#0).
 
 # Demo
 ![Demo](https://github.com/rohan20/flutter-chat-app/blob/master/screenshots/flutter_chat_app_gif.gif)
