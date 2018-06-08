@@ -13,5 +13,3 @@ class Themes {
     accentColor: Colors.blue[400],
   );
 }
-
-}
