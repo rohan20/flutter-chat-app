@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/ChatScreen.dart';
+import 'package:flutter_chat_app/util/Themes.dart';
 
 void main() => runApp(new FlutterChatApp());
 
@@ -14,20 +15,9 @@ class FlutterChatApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Flutter Chat App",
       theme: defaultTargetPlatform == TargetPlatform.iOS
-          ? kIOSTheme
-          : kDefaultTheme,
+          ? Themes.kIOSTheme
+          : Themes.kDefaultTheme,
       home: new ChatScreen(),
     );
   }
 }
-
-final ThemeData kIOSTheme = new ThemeData(
-  primarySwatch: Colors.blue,
-  primaryColor: Colors.grey[100],
-  primaryColorBrightness: Brightness.light,
-);
-
-final ThemeData kDefaultTheme = new ThemeData(
-  primarySwatch: Colors.blue,
-  accentColor: Colors.blue[400],
-);
