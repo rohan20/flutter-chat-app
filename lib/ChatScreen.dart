@@ -54,7 +54,7 @@ class ChatScreenState extends State<ChatScreen> {
                   sort: (a, b) => b.key.compareTo(a.key),
                   //comparing timestamp of messages to check which one would appear first
                   itemBuilder: (_, DataSnapshot messageSnapshot,
-                      Animation<double> animation) {
+                      Animation<double> animation, int i) {
                     return new ChatMessageListItem(
                       messageSnapshot: messageSnapshot,
                       animation: animation,
@@ -122,15 +122,16 @@ class ChatScreenState extends State<ChatScreen> {
                     ),
                     onPressed: () async {
                       await _ensureLoggedIn();
-                      File imageFile = await ImagePicker.pickImage();
+                      File imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+
                       int timestamp = new DateTime.now().millisecondsSinceEpoch;
                       StorageReference storageReference = FirebaseStorage
                           .instance
                           .ref()
                           .child("img_" + timestamp.toString() + ".jpg");
                       StorageUploadTask uploadTask =
-                          storageReference.put(imageFile);
-                      Uri downloadUrl = (await uploadTask.future).downloadUrl;
+                          storageReference.putFile(imageFile);
+                      Uri downloadUrl = await uploadTask.lastSnapshot.ref.getDownloadURL();
                       _sendMessage(
                           messageText: null, imageUrl: downloadUrl.toString());
                     }),
