@@ -129,11 +129,13 @@ class ChatScreenState extends State<ChatScreen> {
                           .instance
                           .ref()
                           .child("img_" + timestamp.toString() + ".jpg");
-                      StorageUploadTask uploadTask =
-                          storageReference.putFile(imageFile);
-                      Uri downloadUrl = await uploadTask.lastSnapshot.ref.getDownloadURL();
+                      StorageUploadTask uploadTask;
+                      uploadTask = storageReference.putFile(imageFile);
+                      await uploadTask.onComplete;
+                      String downloadUrl = await uploadTask.lastSnapshot.ref.getDownloadURL();
+
                       _sendMessage(
-                          messageText: null, imageUrl: downloadUrl.toString());
+                          messageText: null, imageUrl: downloadUrl);
                     }),
               ),
               new Flexible(
