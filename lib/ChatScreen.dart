@@ -54,7 +54,7 @@ class ChatScreenState extends State<ChatScreen> {
                   sort: (a, b) => b.key.compareTo(a.key),
                   //comparing timestamp of messages to check which one would appear first
                   itemBuilder: (_, DataSnapshot messageSnapshot,
-                      Animation<double> animation) {
+                      Animation<double> animation, int i) {
                     return new ChatMessageListItem(
                       messageSnapshot: messageSnapshot,
                       animation: animation,
@@ -128,9 +128,11 @@ class ChatScreenState extends State<ChatScreen> {
                           .instance
                           .ref()
                           .child("img_" + timestamp.toString() + ".jpg");
+
                       StorageUploadTask uploadTask =
-                          storageReference.put(imageFile);
-                      Uri downloadUrl = (await uploadTask.future).downloadUrl;
+                          storageReference.putFile(imageFile);
+                      var downloadUrl =
+                          uploadTask.lastSnapshot.ref.getDownloadURL();
                       _sendMessage(
                           messageText: null, imageUrl: downloadUrl.toString());
                     }),
@@ -194,18 +196,26 @@ class ChatScreenState extends State<ChatScreen> {
     currentUserEmail = googleSignIn.currentUser.email;
 
     if (await auth.currentUser() == null) {
-      GoogleSignInAuthentication credentials =
-          await googleSignIn.currentUser.authentication;
-      await auth.signInWithGoogle(
-          idToken: credentials.idToken, accessToken: credentials.accessToken);
+      final GoogleSignInAccount googleSignInAccount =
+          await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final AuthResult authResult =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final FirebaseUser user = authResult.user;
     }
   }
 
   Future _signOut() async {
     await auth.signOut();
     googleSignIn.signOut();
-    Scaffold
-        .of(_scaffoldContext)
+    Scaffold.of(_scaffoldContext)
         .showSnackBar(new SnackBar(content: new Text('User logged out')));
   }
 }
