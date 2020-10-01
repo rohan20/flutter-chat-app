@@ -12,6 +12,8 @@ You can check out the corresponding Google code lab [here](https://codelabs.deve
 
 Watch the full video <a href="https://www.youtube.com/watch?v=GZuAPS48qoA">here</a>
 
+###If you found this helpful and awesome so plz give a star to this repo.
+
 ## Getting Started
 **Note:** Make sure your Flutter environment is setup.
 
