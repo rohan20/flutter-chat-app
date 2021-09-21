@@ -19,7 +19,7 @@ Watch the full video <a href="https://www.youtube.com/watch?v=GZuAPS48qoA">here<
 
 In the command terminal, run the following commands:
 
-    $ git clone git@github.com:rohan20/flutter-chat-app.git
+    $ git clone https://github.com/rohan20/flutter-chat-app.git
     $ cd flutter-chat-app/
     $ flutter run
 
